@@ -1,4 +1,6 @@
 import React,{useEffect,useState} from "react";
+import "./App.css";
+import ColorScheme from "./colorSchemes.jpg";
 
 const App = () => {
 
@@ -12,9 +14,9 @@ const App = () => {
   const {x,y,targetX,targetY} = values;
 
   useEffect(() => {
-    drawImage("https://images.pexels.com/photos/1170986/pexels-photo-1170986.jpeg?auto=compress&cs=tinysrgb&w=600");
+    drawImage(ColorScheme);
     setValues({...values,x: document.getElementById("canvas").offsetLeft,y: document.getElementById("canvas").offsetTop});
-  },[])
+  },[]);
 
   const drawImage = (url) => {
     let canvas = document.querySelector('#canvas');
@@ -35,14 +37,17 @@ const App = () => {
     return hex;
   }
   const mouseMove = (e) => {
+    console.log(e);
+    e.preventDefault();
     setValues({...values,targetX: e.pageX - x,targetY: e.pageY - y});
+    // setValues({...values,targetX: e.touches[0].clientX - x,targetY: e.touches[0].clientY - y});
     var coord = "x="+targetX+"y="+targetY;
     var context = e.target.getContext('2d');
     var pixelData = context.getImageData(targetX,targetY,1,1).data;
     // console.log(pixelData);
     var hex = "#"+convertToHex(pixelData[0])+convertToHex(pixelData[1])+convertToHex(pixelData[2]);
     console.log(hex);
-    document.getElementById("status").innerText = coord;
+    // document.getElementById("status").innerText = coord;
     document.getElementById("color-code").innerText = hex;
     document.getElementById("color").style.backgroundColor = hex;
 
@@ -54,20 +59,22 @@ const App = () => {
     let code = document.getElementById("color-code");
     code.select();
     document.execCommand('copy');
-    alert("COPIED "+code.value);
+    alert("COPIED "+code.innerHTML);
   }
   return (
-    <div className="App">
+    <div className="app">
       <canvas id="canvas" 
-      style={{ margin: "8px"}} 
+      className="canvas" 
       onClick={() => copyText()}
-      onMouseMove={(e) => mouseMove(e)}>
+      // onMouseMove={(e) => mouseMove(e)}
+      onPointerMove={(e) => mouseMove(e)}
+      >
     
       </canvas>
       <div id="color" style={{ width: "50px",height: "50px"}}>
 
       </div>
-      <textarea id="color-code"></textarea>
+      <textarea  id="color-code"></textarea >
       <div id="status"></div>
     </div>
   );
